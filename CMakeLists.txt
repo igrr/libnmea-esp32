@@ -5,12 +5,12 @@ set(common "libnmea/src/nmea/nmea.c"
            "libnmea/src/parsers/parse.c"
            )
 
-set(parsers gpgga gpgll gprmc)
 
 idf_component_register(SRCS ${common}
                        INCLUDE_DIRS "libnmea/src/nmea"
                                     "libnmea/src/parsers"
                       )
+set(parsers gpgga gpgll gprmc gpgsa gpgsv gptxt gpvtg)
 
 foreach(parser ${parsers})
     # add source file
@@ -26,9 +26,6 @@ foreach(parser ${parsers})
              "set_default=${prefix}set_default"
     )
     set_source_files_properties(${src_file} PROPERTIES COMPILE_DEFINITIONS "${defs}")
-
-    # Hide incorrect (but harmless) use of strncpy in NMEA_PARSER_PREFIX macro
-    set_source_files_properties(${src_file} PROPERTIES COMPILE_OPTIONS "-Wno-stringop-truncation")
 
     # Enable the parser
     string(TOUPPER ${parser} parser_uppercase)
