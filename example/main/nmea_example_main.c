@@ -18,7 +18,7 @@
 #include "gptxt.h"
 #include "gpgsv.h"
 
-#define UART_NUM                UART_NUM_2
+#define UART_NUM                UART_NUM_1
 #define UART_RX_PIN             21
 #define UART_RX_BUF_SIZE        (1024)
 
@@ -40,11 +40,11 @@ static void uart_setup()
             .stop_bits = UART_STOP_BITS_1,
             .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };
-    uart_param_config(UART_NUM, &uart_config);
-    uart_set_pin(UART_NUM,
-            UART_PIN_NO_CHANGE, 21,
-            UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    uart_driver_install(UART_NUM, UART_RX_BUF_SIZE * 2, 0, 0, NULL, 0);
+    ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(UART_NUM,
+                    UART_PIN_NO_CHANGE, UART_RX_PIN,
+                    UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, UART_RX_BUF_SIZE * 2, 0, 0, NULL, 0));
 }
 
 
