@@ -5,17 +5,18 @@ set(common "libnmea/src/nmea/nmea.c"
            "libnmea/src/parsers/parse.c"
            )
 
+# 'register_component' used instead of 'idf_component_register'
+# for compatibility with IDF 3.3.
+set(COMPONENT_ADD_INCLUDEDIRS "libnmea/src/nmea" "libnmea/src/parsers")
+set(COMPONENT_SRCS ${common})
+register_component()
 
-idf_component_register(SRCS ${common}
-                       INCLUDE_DIRS "libnmea/src/nmea"
-                                    "libnmea/src/parsers"
-                      )
 set(parsers gpgga gpgll gprmc gpgsa gpgsv gptxt gpvtg)
 
 foreach(parser ${parsers})
     # add source file
     set(src_file "libnmea/src/parsers/${parser}.c")
-    target_sources(${COMPONENT_LIB} PRIVATE ${src_file})
+    target_sources(${COMPONENT_TARGET} PRIVATE ${src_file})
 
     # add some preprocessor definitions to rename the interface functions
     set(prefix nmea_${parser}_)
@@ -29,8 +30,12 @@ foreach(parser ${parsers})
 
     # Enable the parser
     string(TOUPPER ${parser} parser_uppercase)
-    target_compile_definitions(${COMPONENT_LIB} PRIVATE "ENABLE_${parser_uppercase}=1")
+    target_compile_definitions(${COMPONENT_TARGET} PRIVATE "ENABLE_${parser_uppercase}=1")
 endforeach()
 
 list(LENGTH parsers parsers_count)
-target_compile_definitions(${COMPONENT_LIB} PRIVATE PARSER_COUNT=${parsers_count})
+target_compile_definitions(${COMPONENT_TARGET} PRIVATE PARSER_COUNT=${parsers_count})
+
+if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_LESS "4.0")
+    set_source_files_properties(libnmea/src/parsers/gpgsa.c PROPERTIES COMPILE_OPTIONS "-Wno-char-subscripts")
+endif()
