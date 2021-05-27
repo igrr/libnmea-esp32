@@ -1,0 +1,22 @@
+name: Push components to Espressif Component Service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload_components:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: "recursive"
+
+      - name: Upload components to component service
+        uses: espressif/github-actions/upload_components@master
+        with:
+          name: "libnmea"
+          namespace: "espressif"
+          service_url: "https://api.components.dev.espressif.tools/"
+          api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
