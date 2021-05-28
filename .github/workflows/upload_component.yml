@@ -18,5 +18,4 @@ jobs:
         with:
           name: "libnmea"
           namespace: "espressif"
-          service_url: "https://api.components.dev.espressif.tools/"
-          api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN_STAGING }}
+          api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
