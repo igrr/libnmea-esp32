@@ -17,5 +17,5 @@ jobs:
         uses: espressif/github-actions/upload_components@master
         with:
           name: "libnmea"
-          namespace: "espressif"
+          namespace: "igrr"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
