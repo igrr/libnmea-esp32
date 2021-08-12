@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
 
 set(common "libnmea/src/nmea/nmea.c"
            "libnmea/src/nmea/parser_static.c"
