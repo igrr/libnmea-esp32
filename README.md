@@ -4,7 +4,15 @@ This is a wrapper around [libnmea](https://github.com/jacketizer/libnmea),
 in the form of an [ESP-IDF](https://github.com/espressif/esp-idf) component.
 It works with any chip supported in ESP-IDF: ESP32, ESP32-S2, ESP32-S3, ESP32-C3.
 
-To use, clone the component into the `components` directory of your project,
+## Usage
+
+There are two usage options:
+
+1. Use [idf-component-manager](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-component-manager.html). Simply run `idf.py add-dependency igrr/libnmea==required_version` in your project directory.
+
+OR
+
+2. Clone the component into the `components` directory of your project,
 or add it as a submodule.
 See [libnmea documentation](https://github.com/jacketizer/libnmea#how-to-use-it)
 for more details.

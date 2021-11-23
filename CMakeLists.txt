@@ -35,6 +35,7 @@ endforeach()
 
 list(LENGTH parsers parsers_count)
 target_compile_definitions(${COMPONENT_TARGET} PRIVATE PARSER_COUNT=${parsers_count})
+target_compile_options(${COMPONENT_TARGET} PRIVATE "-Wno-strict-prototypes")
 
 if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_LESS "4.0")
     set_source_files_properties(libnmea/src/parsers/gpgsa.c PROPERTIES COMPILE_OPTIONS "-Wno-char-subscripts")
