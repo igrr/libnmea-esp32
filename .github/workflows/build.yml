@@ -42,3 +42,34 @@ jobs:
         run: |
           . ${IDF_PATH}/export.sh
           idf.py build
+
+  run-qemu:
+    strategy:
+      matrix:
+        idf_ver: ["latest"]
+        idf_target: ["esp32"]
+    runs-on: ubuntu-22.04
+    container: espressif/idf:${{ matrix.idf_ver }}
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+          # see the comment about checkout path in the job above
+          path: libnmea
+      - name: Install pytest
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          pip install pytest-embedded pytest-embedded-qemu pytest-embedded-idf pytest-embedded-serial pytest-embedded-serial-esp
+      - name: Build the example
+        shell: bash
+        working-directory: example
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py -DSDKCONFIG_DEFAULTS="sdkconfig.ci" build
+      - name: Run the tests
+        shell: bash
+        working-directory: example
+        run: |
+          . ${IDF_PATH}/export.sh
+          pytest
