@@ -58,7 +58,7 @@ static void read_and_parse_nmea()
         // Read data from the UART
         int read_bytes = uart_read_bytes(UART_NUM,
                 (uint8_t*) buffer + total_bytes,
-                UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_RATE_MS);
+                UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_PERIOD_MS);
         if (read_bytes <= 0) {
             continue;
         }
