@@ -6,9 +6,7 @@
  */
 
 #include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "driver/uart.h"
+#include "nmea_example.h"
 #include "nmea.h"
 #include "gpgll.h"
 #include "gpgga.h"
@@ -18,71 +16,30 @@
 #include "gptxt.h"
 #include "gpgsv.h"
 
-#define UART_NUM                UART_NUM_1
-#define UART_RX_PIN             21
-#define UART_RX_BUF_SIZE        (1024)
-
-static void uart_setup();
 static void read_and_parse_nmea();
 
 void app_main()
 {
-    uart_setup();
+	nmea_example_init_interface();
     read_and_parse_nmea();
-}
-
-static void uart_setup()
-{
-    uart_config_t uart_config = {
-            .baud_rate = 9600,
-            .data_bits = UART_DATA_8_BITS,
-            .parity = UART_PARITY_DISABLE,
-            .stop_bits = UART_STOP_BITS_1,
-            .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
-    };
-    ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM,
-                    UART_PIN_NO_CHANGE, UART_RX_PIN,
-                    UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, UART_RX_BUF_SIZE * 2, 0, 0, NULL, 0));
 }
 
 
 static void read_and_parse_nmea()
 {
-    // Configure a temporary buffer for the incoming data
-    char *buffer = (char*) malloc(UART_RX_BUF_SIZE + 1);
-    char fmt_buf[32];
-    size_t total_bytes = 0;
     while (1) {
-        // Read data from the UART
-        int read_bytes = uart_read_bytes(UART_NUM,
-                (uint8_t*) buffer + total_bytes,
-                UART_RX_BUF_SIZE - total_bytes, 100 / portTICK_PERIOD_MS);
-        if (read_bytes <= 0) {
-            continue;
-        }
-
+		char fmt_buf[32];
         nmea_s *data;
-        total_bytes += read_bytes;
 
-        /* find start (a dollar sign) */
-        char* start = memchr(buffer, '$', total_bytes);
-        if (start == NULL) {
-            total_bytes = 0;
-            continue;
+        char* start;
+        size_t length;
+        nmea_example_read_line(&start, &length, 100 /* ms */);
+        if (length == 0) {
+        	continue;
         }
-
-        /* find end of line */
-        char* end = memchr(start, '\r', total_bytes - (start - buffer));
-        if (NULL == end || '\n' != *(++end)) {
-            continue;
-        }
-        end[-1] = NMEA_END_CHAR_1;
-        end[0] = NMEA_END_CHAR_2;
 
         /* handle data */
-        data = nmea_parse(start, end - start + 1, 0);
+        data = nmea_parse(start, length, 0);
         if (data == NULL) {
             printf("Failed to parse the sentence!\n");
             printf("  Type: %.5s (%d)\n", start+1, nmea_get_type(start));
@@ -187,20 +144,5 @@ static void read_and_parse_nmea()
 
             nmea_free(data);
         }
-
-        /* buffer empty? */
-        if (end == buffer + total_bytes) {
-            total_bytes = 0;
-            continue;
-        }
-
-        /* copy rest of buffer to beginning */
-        if (buffer != memmove(buffer, end, total_bytes - (end - buffer))) {
-            total_bytes = 0;
-            continue;
-        }
-
-        total_bytes -= end - buffer;
     }
-    free(buffer);
 }
