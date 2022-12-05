@@ -20,7 +20,7 @@ static void read_and_parse_nmea();
 
 void app_main()
 {
-	nmea_example_init_interface();
+    nmea_example_init_interface();
     read_and_parse_nmea();
 }
 
@@ -28,21 +28,21 @@ void app_main()
 static void read_and_parse_nmea()
 {
     while (1) {
-		char fmt_buf[32];
+        char fmt_buf[32];
         nmea_s *data;
 
-        char* start;
+        char *start;
         size_t length;
         nmea_example_read_line(&start, &length, 100 /* ms */);
         if (length == 0) {
-        	continue;
+            continue;
         }
 
         /* handle data */
         data = nmea_parse(start, length, 0);
         if (data == NULL) {
             printf("Failed to parse the sentence!\n");
-            printf("  Type: %.5s (%d)\n", start+1, nmea_get_type(start));
+            printf("  Type: %.5s (%d)\n", start + 1, nmea_get_type(start));
         } else {
             if (data->errors != 0) {
                 printf("WARN: The sentence struct contains parse errors!\n");
@@ -53,7 +53,7 @@ static void read_and_parse_nmea()
                 nmea_gpgga_s *gpgga = (nmea_gpgga_s *) data;
                 printf("Number of satellites: %d\n", gpgga->n_satellites);
                 printf("Altitude: %f %c\n", gpgga->altitude,
-                        gpgga->altitude_unit);
+                       gpgga->altitude_unit);
             }
 
             if (NMEA_GPGLL == data->type) {
