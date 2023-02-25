@@ -9,3 +9,7 @@ dependencies:
     version: ">=4.2"
 examples:
   - path: ./example
+files:
+  exclude:
+    - "example/sdkconfig.ci"
+    - "example/test_*.py"

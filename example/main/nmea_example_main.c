@@ -27,6 +27,7 @@ void app_main()
 
 static void read_and_parse_nmea()
 {
+    printf("Example ready\n");
     while (1) {
         char fmt_buf[32];
         nmea_s *data;
