@@ -1,6 +1,11 @@
-version: "0.2.0"
 description: NMEA parser
 url: https://github.com/igrr/libnmea-esp32
+repository: https://github.com/igrr/libnmea-esp32.git
+documentation: https://github.com/jacketizer/libnmea#how-to-use-it
+issues: https://github.com/igrr/libnmea-esp32/issues
+discussion: https://github.com/igrr/libnmea-esp32/discussions
 dependencies:
   idf:
     version: ">=4.2"
+examples:
+  - path: ./example
