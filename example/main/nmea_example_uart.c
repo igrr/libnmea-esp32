@@ -5,6 +5,7 @@
 #include "sdkconfig.h"
 #include "nmea_example.h"
 #include "nmea.h"
+#include "esp_idf_version.h"
 
 #define UART_NUM                CONFIG_EXAMPLE_UART_NUM
 #define UART_RX_PIN             CONFIG_EXAMPLE_UART_RX
@@ -22,7 +23,10 @@ void nmea_example_init_interface(void)
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+        .source_clk = UART_SCLK_DEFAULT,
+#endif
     };
     ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(UART_NUM,
@@ -67,12 +71,14 @@ void nmea_example_read_line(char **out_line_buf, size_t *out_line_len, int timeo
     if (end == NULL || *(++end) != '\n') {
         return;
     }
-    end[-1] = NMEA_END_CHAR_1;
-    end[0] = NMEA_END_CHAR_2;
+    end++;
+
+    end[-2] = NMEA_END_CHAR_1;
+    end[-1] = NMEA_END_CHAR_2;
 
     *out_line_buf = start;
     *out_line_len = end - start;
-    if (end > s_buf + s_total_bytes) {
+    if (end < s_buf + s_total_bytes) {
         /* some data left at the end of the buffer, record its position until the next call */
         s_last_buf_end = end;
     } else {
