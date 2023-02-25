@@ -1,6 +1,6 @@
-version: "0.1.1"
+version: "0.2.0"
 description: NMEA parser
 url: https://github.com/igrr/libnmea-esp32
 dependencies:
   idf:
-    version: ">=4.0"
+    version: ">=4.2"

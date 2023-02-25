@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        idf_ver: ["release-v4.1", "release-v4.2", "release-v4.3", "release-v4.4", "latest"]
+        idf_ver: ["release-v4.2", "release-v4.3", "release-v4.4", "release-v5.0", "latest"]
         idf_target: ["esp32"]
         include:
           - idf_ver: "release-v4.2"
@@ -22,17 +22,23 @@ jobs:
             idf_target: esp32c3
           - idf_ver: "release-v4.4"
             idf_target: esp32s3
-    runs-on: ubuntu-20.04
+          - idf_ver: "release-v5.0"
+            idf_target: esp32c2
+    runs-on: ubuntu-22.04
     container: espressif/idf:${{ matrix.idf_ver }}
     steps:
       - uses: actions/checkout@v1
         with:
           submodules: recursive
+          # idf_component.yml "override_path" feature requires the component directory name
+          # to match the component name in the registry, so use 'libnmea' instead of 'libnmea-esp32'
+          # when checking it out
+          path: libnmea
       - name: Build for ${{ matrix.idf_target }}
         env:
           IDF_TARGET: ${{ matrix.idf_target }}
         shell: bash
+        working-directory: example
         run: |
           . ${IDF_PATH}/export.sh
-          cd example
           idf.py build
