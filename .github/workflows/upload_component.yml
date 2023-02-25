@@ -1,21 +1,21 @@
-name: Push components to Espressif Component Service
+name: Push the component to https://components.espressif.com
 
 on:
   push:
     tags:
-      - "v*"
-
+      - v*
 jobs:
   upload_components:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
           submodules: "recursive"
 
-      - name: Upload components to component service
-        uses: espressif/github-actions/upload_components@master
+      - name: Upload component to the component registry
+        uses: espressif/upload-components-ci-action@v1
         with:
+          version: ${{ github.ref_name }}
           name: "libnmea"
           namespace: "igrr"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
